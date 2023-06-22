@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using Dtos;
 using Opc.UaFx;
 using Opc.UaFx.Server;
-using TraegerExample.Console.Dtos;
 
-namespace TraegerExample.Console {
-  public class TraegerExampleOpcUaNodeManager: OpcNodeManager {
+namespace Server {
+  public class OpcUaNodeManager: OpcNodeManager {
     private readonly CancellationTokenSource _cts;
 
     protected override bool UseAsyncMethodCalls => true;
 
-    public TraegerExampleOpcUaNodeManager(string address) : base(address) {
+    public OpcUaNodeManager(string address) : base(address) {
       _cts = new CancellationTokenSource();
     }
 
@@ -26,17 +23,24 @@ namespace TraegerExample.Console {
 
     protected override IEnumerable<IOpcNode> CreateNodes(OpcNodeReferenceCollection references) {
       yield return new OpcDataTypeNode<ResultCode>();
+      yield return new OpcDataTypeNode<CustomDataType>();
 
       var methodsNamespace = DefaultNamespace.GetName("Methods");
       var methods = new OpcFolderNode(methodsNamespace);
       
+      var dataNamespace = DefaultNamespace.GetName("Data");
+      var data = new OpcFolderNode(dataNamespace);
+      
       references.Add(methods, OpcObjectTypes.ObjectsFolder);
+      references.Add(data, OpcObjectTypes.ObjectsFolder);
 
       // ReSharper disable ObjectCreationAsStatement
       new OpcMethodNode(methods, nameof(LoadExample), new Func<Guid, string, ResultCode>(LoadExample));
+      new OpcDataVariableNode<CustomDataType>(data, data.Namespace.GetName("LicenseOption"), new CustomDataType(Guid.NewGuid().ToString()));
       // ReSharper restore ObjectCreationAsStatement
-
+      
       yield return methods;
+      yield return data;
     }
 
     

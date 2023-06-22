@@ -1,11 +1,10 @@
-﻿using System;
-using Opc.UaFx.Server;
+﻿using Opc.UaFx.Server;
 
-namespace TraegerExample.Console {
-  public class TraegerExampleOpcUaServer {
+namespace Server {
+  public class OpcUaServer : IDisposable {
     private readonly OpcServer _server;
     
-    public TraegerExampleOpcUaServer(string address, TraegerExampleOpcUaNodeManager nodeManager) {
+    public OpcUaServer(string address, OpcUaNodeManager nodeManager) {
       _server = new OpcServer(address, nodeManager);
     }
     
@@ -16,7 +15,7 @@ namespace TraegerExample.Console {
     #region IDisposable Members
     private volatile bool _disposed;
 
-    ~TraegerExampleOpcUaServer() {
+    ~OpcUaServer() {
       Dispose(false);
     }
 

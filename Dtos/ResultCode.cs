@@ -1,6 +1,6 @@
 ﻿using Opc.UaFx;
 
-namespace TraegerExample.Console.Dtos {
+namespace Dtos {
   [OpcDataType(nameof(ResultCode), 2, Description = "Result code", UseDataTypeDescription = true)]
   public enum ResultCode {
     [OpcEnumMember(nameof(ErrorNoExampleId))]
