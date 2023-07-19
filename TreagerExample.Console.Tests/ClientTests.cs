@@ -17,6 +17,7 @@ public class ClientTests : IDisposable
     {
         _output = output;
         _server = new OpcUaServer(Default.ServerAddress, new OpcUaNodeManager(Default.ServerAddress));
+        // TODO: Comment this line out, if you want to run the tests with the console application
         _server.Start();
 
         _client = new OpcClient(Default.ServerAddress);
@@ -26,6 +27,7 @@ public class ClientTests : IDisposable
     [Fact]
     public void Try_Read_Node_Internal()
     {
+        _output.WriteLine("------------------ Type Info Assembly CustomDataType ------------------");
         var typeInfo = typeof(CustomDataType).GetTypeInfo();
         _output.WriteLine(typeInfo.AssemblyQualifiedName);
 
@@ -35,15 +37,26 @@ public class ClientTests : IDisposable
         }
         
         var node = _client.ReadNode("ns=2;s=Data/LicenseOption");
+        
+        _output.WriteLine("------------------ Type Info OpcUaClient CustomDataType ------------------");
+        typeInfo = node.Value.GetType().GetTypeInfo();
+        _output.WriteLine(typeInfo.AssemblyQualifiedName);
+
+        foreach (var attribute in typeInfo.GetCustomAttributes())
+        {
+            _output.WriteLine(attribute.GetType().Name);
+        }
+        
         var licenseOption = node.As<CustomDataType>();
         Assert.NotNull(licenseOption);
-        
+
         _output.WriteLine(licenseOption.ToString());
     }
     
     [Fact]
     public void Try_Read_Node_Dtos()
     {
+        _output.WriteLine("------------------ Type Info Assembly Dtos.CustomDataType ------------------");
         var typeInfo = typeof(Dtos.CustomDataType).GetTypeInfo();
         _output.WriteLine(typeInfo.AssemblyQualifiedName);
 
@@ -53,8 +66,20 @@ public class ClientTests : IDisposable
         }
         
         var node = _client.ReadNode("ns=2;s=Data/LicenseOption");
+        
+        _output.WriteLine("------------------ Type Info OpcUaClient Dtos.CustomDataType ------------------");
+        typeInfo = node.Value.GetType().GetTypeInfo();
+        _output.WriteLine(typeInfo.AssemblyQualifiedName);
+
+        foreach (var attribute in typeInfo.GetCustomAttributes())
+        {
+            _output.WriteLine(attribute.GetType().Name);
+        }
+        
         var licenseOption = node.As<Dtos.CustomDataType>();
         Assert.NotNull(licenseOption);
+        
+        
         
         _output.WriteLine(licenseOption.ToString());
     }
